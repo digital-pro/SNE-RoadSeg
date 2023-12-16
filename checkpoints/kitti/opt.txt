@@ -1,0 +1,25 @@
+----------------- Options ---------------
+               batch_size: 2                             
+          checkpoints_dir: ./checkpoints                 
+                 dataroot: examples                      	[default: None]
+                  dataset: kitti                         
+                    epoch: kitti                         	[default: latest]
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: kaiming                       
+                  isTrain: False                         	[default: None]
+                    model: roadseg                       
+                     name: kitti                         	[default: experiment_name]
+                 no_label: False                         
+                     norm: instance                      
+              num_threads: 8                             
+                    phase: test                          
+                 prob_map: False                         
+              results_dir: ./testresults/                
+                     seed: 0                             
+           serial_batches: False                         
+                useHeight: 384                           
+                 useWidth: 1248                          
+                  use_sne: True                          	[default: False]
+                  verbose: False                         
+----------------- End -------------------
