@@ -1,0 +1,1 @@
+python run_example.py --dataroot 'datasets\track\' --name track--use_sne 
