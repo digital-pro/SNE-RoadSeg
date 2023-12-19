@@ -32,7 +32,7 @@ if __name__ == '__main__':
     #depth_image = cv2.imread(os.path.join('datasets', 'track','testing', 'depth_u16','frame_1.png'), cv2.IMREAD_ANYDEPTH)
     
     # Try reading pfm depth directly
-    fName = 'frame_700-dpt_swin2_tiny_256.pfm'
+    fName = 'frame_700.pfm'
     depth_image = cv2.imread(os.path.join('b:\\','code','Midas','output',fName), cv2.IMREAD_UNCHANGED)
     
     # original depth written as a 16-bit .png looks good
@@ -54,11 +54,11 @@ if __name__ == '__main__':
 
     # depth_image is also inverted. Try to invert, but zeros?
     maxDepth = 2200 # seems arbitrary?
-    depth_image = (maxDepth - depth_image) * 30 #scale back to u16
+    #depth_image = (maxDepth - depth_image) * 30 #scale back to u16
 
-    # I think maybe we need to flip it
-    depth_image = cv2.flip(depth_image, 0) # 0 means vertical, 2 means horizontal
-    depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
+    # Sometimes we need to flip it
+    #depth_image = cv2.flip(depth_image, 0) # 0 means vertical, 2 means horizontal
+    #depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
 
     # compute normal using SNE
     sne_model = SNE()
