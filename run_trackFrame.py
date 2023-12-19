@@ -26,8 +26,8 @@ if __name__ == '__main__':
     model.eval()
 
     # if you want to use your own data, please modify rgb_image, depth_image, camParam and use_size correspondingly.
-    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_1.png')), cv2.COLOR_BGR2RGB)
-    depth_image = cv2.imread(os.path.join('datasets', 'track','testing', 'depth_u16','frame001.png'), cv2.IMREAD_ANYDEPTH)
+    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_1.jpg')), cv2.COLOR_BGR2RGB)
+    depth_image = cv2.imread(os.path.join('datasets', 'track','testing', 'depth_u16','frame_1.png'), cv2.IMREAD_ANYDEPTH)
     oriHeight, oriWidth, _ = rgb_image.shape
     oriSize = (oriWidth, oriHeight)
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     normal = sne_model(torch.tensor(depth_image.astype(np.float32)/1000), camParam)
     normal_image = normal.cpu().numpy()
     normal_image = np.transpose(normal_image, [1, 2, 0])
-    cv2.imwrite(os.path.join('examples', 'normal.png'), cv2.cvtColor(255*(1+normal_image)/2, cv2.COLOR_RGB2BGR))
+    cv2.imwrite(os.path.join('output', 'normal.png'), cv2.cvtColor(255*(1+normal_image)/2, cv2.COLOR_RGB2BGR))
     normal_image = cv2.resize(normal_image, use_size)
 
     rgb_image = transforms.ToTensor()(rgb_image).unsqueeze(dim=0)
@@ -59,5 +59,5 @@ if __name__ == '__main__':
         pred_img = cv2.resize(pred_img, oriSize)
         prob_map = tensor2confidencemap(pred)
         prob_map = cv2.resize(prob_map, oriSize)
-        cv2.imwrite(os.path.join('examples', 'pred.png'), pred_img)
-        cv2.imwrite(os.path.join('examples', 'prob_map.png'), prob_map)
+        cv2.imwrite(os.path.join('output', 'pred.png'), pred_img)
+        cv2.imwrite(os.path.join('output', 'prob_map.png'), prob_map)

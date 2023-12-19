@@ -1,1 +1,1 @@
-python run_example.py --dataroot 'datasets\track\' --name track--use_sne 
+python run_trackFrame.py --dataroot 'datasets' --name kitti --use_sne --epoch kitti

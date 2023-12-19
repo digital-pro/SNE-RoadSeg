@@ -1,0 +1,1 @@
+python3 run_example.py --dataroot track --name kitti --use_sne --epoch kitti
