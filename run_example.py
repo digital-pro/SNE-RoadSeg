@@ -28,6 +28,8 @@ if __name__ == '__main__':
     # if you want to use your own data, please modify rgb_image, depth_image, camParam and use_size correspondingly.
     rgb_image = cv2.cvtColor(cv2.imread(os.path.join('examples', 'rgb.png')), cv2.COLOR_BGR2RGB)
     depth_image = cv2.imread(os.path.join('examples', 'depth_u16.png'), cv2.IMREAD_ANYDEPTH)
+    cv2.imwrite(os.path.join('examples', 'odepth.png'), depth_image.astype(np.uint16))
+
     oriHeight, oriWidth, _ = rgb_image.shape
     oriSize = (oriWidth, oriHeight)
 
@@ -35,6 +37,7 @@ if __name__ == '__main__':
     use_size = (1248, 384)
     rgb_image = cv2.resize(rgb_image, use_size)
     rgb_image = rgb_image.astype(np.float32) / 255
+
 
     # compute normal using SNE
     sne_model = SNE()
@@ -61,3 +64,4 @@ if __name__ == '__main__':
         prob_map = cv2.resize(prob_map, oriSize)
         cv2.imwrite(os.path.join('examples', 'pred.png'), pred_img)
         cv2.imwrite(os.path.join('examples', 'prob_map.png'), prob_map)
+        cv2.imwrite(os.path.join('examples', 'depth.png'), depth_image.astype(np.uint16))

@@ -1,4 +1,5 @@
 import os
+
 from options.test_options import TestOptions
 from models import create_model
 from util.util import tensor2labelim, tensor2confidencemap
@@ -26,11 +27,12 @@ if __name__ == '__main__':
     model.eval()
 
     # if you want to use your own data, please modify rgb_image, depth_image, camParam and use_size correspondingly.
-    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_1.jpg')), cv2.COLOR_BGR2RGB)
+    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_700.jpg')), cv2.COLOR_BGR2RGB)
+    cv2.imwrite(os.path.join('output', 'oimage.png'), rgb_image)
     #depth_image = cv2.imread(os.path.join('datasets', 'track','testing', 'depth_u16','frame_1.png'), cv2.IMREAD_ANYDEPTH)
     
     # Try reading pfm depth directly
-    fName = 'frame_1-dpt_swin2_tiny_256.pfm'
+    fName = 'frame_700-dpt_swin2_tiny_256.pfm'
     depth_image = cv2.imread(os.path.join('b:\\','code','Midas','output',fName), cv2.IMREAD_UNCHANGED)
     
     # original depth written as a 16-bit .png looks good
@@ -51,8 +53,12 @@ if __name__ == '__main__':
     depth_image = cv2.resize(depth_image, use_size)
 
     # depth_image is also inverted. Try to invert, but zeros?
-    maxDepth = 2500 # seems arbitrary?
-    depth_image = maxDepth - depth_image
+    maxDepth = 2200 # seems arbitrary?
+    depth_image = (maxDepth - depth_image) * 30 #scale back to u16
+
+    # I think maybe we need to flip it
+    depth_image = cv2.flip(depth_image, 0) # 0 means vertical, 2 means horizontal
+    depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
 
     # compute normal using SNE
     sne_model = SNE()
@@ -65,8 +71,8 @@ if __name__ == '__main__':
     # SNE converts depth to single() in lower range, so let's export single()
     # instead of u16!
 
-
-    normal = sne_model(torch.tensor(depth_image.astype(np.float32)/1000), camParam)
+    # our depthmaps have a different scale, so use a smaller divisor
+    normal = sne_model(torch.tensor(depth_image.astype(np.float32)), camParam)
     #depth_image = depth_image.astype(np.float32)/1000
     #depth_image = depth_image.astype(np.float32)
 
@@ -85,6 +91,7 @@ if __name__ == '__main__':
 
         palet_file = 'datasets/palette.txt'
         impalette = list(np.genfromtxt(palet_file, dtype=np.uint8).reshape(3*256))
+        
         pred_img = tensor2labelim(pred, impalette)
         pred_img = cv2.resize(pred_img, oriSize)
         prob_map = tensor2confidencemap(pred)
