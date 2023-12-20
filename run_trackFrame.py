@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # note that .resize uses Width, Height (ugh)
     use_size = (1280, 480)
     rgb_image = cv2.resize(rgb_image, use_size)
-    rgb_image = rgb_image.astype(np.float32) # / 255 # Normalize to 0-1
+    rgb_image = rgb_image.astype(np.float32) / 255 # Normalize to 0-1
 
     depth_image = cv2.resize(depth_image, use_size)
 
