@@ -46,9 +46,9 @@ if __name__ == '__main__':
 
     # resize image to enable sizes divisible  by 32
     # Or assume we already have matching images
-    use_size = (1248, 384) # use_size = (1280, 480)
+    use_size = (1280, 360)
     rgb_image = cv2.resize(rgb_image, use_size)
-    rgb_image = rgb_image.astype(np.float32) / 255 # Normalize to 0-1
+    rgb_image = rgb_image.astype(np.float32) # / 255 # Normalize to 0-1
 
     depth_image = cv2.resize(depth_image, use_size)
 
@@ -64,8 +64,13 @@ if __name__ == '__main__':
     sne_model = SNE()
     
     # Not sure what we want for camera parameters for our size image!
-    camParam = torch.tensor([[7.215377e+02, 0.000000e+00, 6.095593e+02],
-                             [0.000000e+00, 7.215377e+02, 1.728540e+02],
+    #camParam = torch.tensor([[7.215377e+02, 0.000000e+00, 6.095593e+02],
+    #                        [0.000000e+00, 7.215377e+02, 1.728540e+02],
+    #                         [0.000000e+00, 0.000000e+00, 1.000000e+00]], dtype=torch.float32)  # camera parameters
+
+    # guesstimate for our 1280 x 480 source material
+    camParam = torch.tensor([[7.215377e+02, 0.000000e+00, 640],
+                             [0.000000e+00, 7.215377e+02, 180],
                              [0.000000e+00, 0.000000e+00, 1.000000e+00]], dtype=torch.float32)  # camera parameters
     
     # SNE converts depth to single() in lower range, so let's export single()
@@ -73,6 +78,7 @@ if __name__ == '__main__':
 
     # our depthmaps have a different scale, so use a smaller divisor
     normal = sne_model(torch.tensor(depth_image.astype(np.float32)), camParam)
+
     #depth_image = depth_image.astype(np.float32)/1000
     #depth_image = depth_image.astype(np.float32)
 
@@ -81,6 +87,8 @@ if __name__ == '__main__':
     normal_image = normal.cpu().numpy()
     normal_image = np.transpose(normal_image, [1, 2, 0])
     cv2.imwrite(os.path.join('output', 'normal.png'), cv2.cvtColor(255*(1+normal_image)/2, cv2.COLOR_RGB2BGR))
+    
+    # Normal is 3 channel so maybe we need a 3-channel use_size?
     normal_image = cv2.resize(normal_image, use_size)
 
     rgb_image = transforms.ToTensor()(rgb_image).unsqueeze(dim=0)
