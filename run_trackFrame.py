@@ -16,7 +16,7 @@ class dataset():
 
 if __name__ == '__main__':
     opt = TestOptions().parse()
-    opt.num_threads = 1
+    opt.num_threads = 4
     opt.batch_size = 1
     opt.serial_batches = True  # no shuffle
     opt.isTrain = False
@@ -33,9 +33,11 @@ if __name__ == '__main__':
     
     # Try reading pfm depth directly
     fName = 'frame_700.pfm'
+
+    # cv2 brings images in with shape rows, columns 
     depth_image = cv2.imread(os.path.join('b:\\','code','Midas','output',fName), cv2.IMREAD_UNCHANGED)
     
-    # original depth written as a 16-bit .png looks good
+    # original depth written as a 16-bit .png looks good, but inverted and small scale
     cv2.imwrite(os.path.join('output', 'odepth.png'), depth_image.astype(np.uint16))
     
     # even though we eventually want float, put it back in uint16
@@ -46,19 +48,21 @@ if __name__ == '__main__':
 
     # resize image to enable sizes divisible  by 32
     # Or assume we already have matching images
-    use_size = (1280, 360)
+    # note that .resize uses Width, Height (ugh)
+    use_size = (1280, 480)
     rgb_image = cv2.resize(rgb_image, use_size)
     rgb_image = rgb_image.astype(np.float32) # / 255 # Normalize to 0-1
 
     depth_image = cv2.resize(depth_image, use_size)
 
     # depth_image is also inverted. Try to invert, but zeros?
-    maxDepth = 2200 # seems arbitrary?
-    #depth_image = (maxDepth - depth_image) * 30 #scale back to u16
+    # maxDepth = 2300 # seems arbitrary?
+    maxDepth = depth_image.max()
+    depth_image = (maxDepth - depth_image) * round(pow(2,16) / maxDepth) #scale to u16 range
 
     # Sometimes we need to flip it
     #depth_image = cv2.flip(depth_image, 0) # 0 means vertical, 2 means horizontal
-    depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
+    #depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
 
     # compute normal using SNE
     sne_model = SNE()
@@ -69,15 +73,14 @@ if __name__ == '__main__':
     #                         [0.000000e+00, 0.000000e+00, 1.000000e+00]], dtype=torch.float32)  # camera parameters
 
     # guesstimate for our 1280 x 480 source material
-    camParam = torch.tensor([[7.215377e+02, 0.000000e+00, 640],
-                             [0.000000e+00, 7.215377e+02, 180],
-                             [0.000000e+00, 0.000000e+00, 1.000000e+00]], dtype=torch.float32)  # camera parameters
-    
-    # SNE converts depth to single() in lower range, so let's export single()
-    # instead of u16!
+    # Fx in pixels, Fy in pixels, so 1280 pixels / (say) 6mm wide * 4mm focal = 860
+    camParam = torch.tensor([[860, 0, 640],
+                             [0, 860, 40],
+                             [0, 0, 1]], dtype=torch.float32)  # camera parameters
 
+    # But now we've rescaled!    
     # our depthmaps have a different scale, so use a smaller divisor
-    normal = sne_model(torch.tensor(depth_image.astype(np.float32)), camParam)
+    normal = sne_model(torch.tensor(depth_image.astype(np.float32)/1000), camParam)
 
     #depth_image = depth_image.astype(np.float32)/1000
     #depth_image = depth_image.astype(np.float32)
@@ -89,7 +92,7 @@ if __name__ == '__main__':
     cv2.imwrite(os.path.join('output', 'normal.png'), cv2.cvtColor(255*(1+normal_image)/2, cv2.COLOR_RGB2BGR))
     
     # Normal is 3 channel so maybe we need a 3-channel use_size?
-    normal_image = cv2.resize(normal_image, use_size)
+    #normal_image = cv2.resize(normal_image, use_size)
 
     rgb_image = transforms.ToTensor()(rgb_image).unsqueeze(dim=0)
     normal_image = transforms.ToTensor()(normal_image).unsqueeze(dim=0)
