@@ -1,7 +1,7 @@
 ----------------- Options ---------------
                batch_size: 2                             
           checkpoints_dir: ./checkpoints                 
-                 dataroot: 'datasets'                    	[default: None]
+                 dataroot: datasets                      	[default: None]
                   dataset: kitti                         
                     epoch: kitti                         	[default: latest]
                   gpu_ids: 0                             

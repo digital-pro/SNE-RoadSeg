@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # Sometimes we need to flip it
     #depth_image = cv2.flip(depth_image, 0) # 0 means vertical, 2 means horizontal
-    #depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
+    depth_image = cv2.flip(depth_image, 2) # 0 means vertical, 2 means horizontal
 
     # compute normal using SNE
     sne_model = SNE()
