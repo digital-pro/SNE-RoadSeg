@@ -26,16 +26,21 @@ if __name__ == '__main__':
     model.setup(opt)
     model.eval()
 
-    # if you want to use your own data, please modify rgb_image, depth_image, camParam and use_size correspondingly.
+    # NN doesn't like our track video frames. It was trained on KITTI, where all the "action" is
+    # in the bottom half of the frame. SO, we can try expanding the rgb and depth images to include
+    # a "black" top half. TBD.
+
     rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_700.jpg')), cv2.COLOR_BGR2RGB)
     cv2.imwrite(os.path.join('output', 'oimage.png'), rgb_image)
-    #depth_image = cv2.imread(os.path.join('datasets', 'track','testing', 'depth_u16','frame_1.png'), cv2.IMREAD_ANYDEPTH)
-    
-    # Try reading pfm depth directly
+
+    # pad the image by its height    
+    topPad, width, channels = rgb_image.shape
+    rgb_image = cv2.copyMakeBorder(rgb_image, topPad, 0, 0, 0, cv2.BORDER_CONSTANT, None, value = 0)
     fName = 'frame_700.pfm'
 
     # cv2 brings images in with shape rows, columns 
     depth_image = cv2.imread(os.path.join('b:\\','code','Midas','output',fName), cv2.IMREAD_UNCHANGED)
+    depth_image = cv2.copyMakeBorder(depth_image, topPad, 0, 0, 0, cv2.BORDER_CONSTANT, None, value = 0)
     
     # original depth written as a 16-bit .png looks good, but inverted and small scale
     cv2.imwrite(os.path.join('output', 'odepth.png'), depth_image.astype(np.uint16))
