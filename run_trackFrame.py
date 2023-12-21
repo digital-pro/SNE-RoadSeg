@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # in the bottom half of the frame. SO, we can try expanding the rgb and depth images to include
     # a "black" top half. TBD.
 
-    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_700.jpg')), cv2.COLOR_BGR2RGB)
+    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_500.jpg')), cv2.COLOR_BGR2RGB)
     cv2.imwrite(os.path.join('output', 'oimage.png'), rgb_image)
 
     # pad the image by its height    
@@ -56,7 +56,8 @@ if __name__ == '__main__':
     # note that .resize uses Width, Height (ugh)
     # resize image to enable sizes divide 32
     sizeModulo = 32
-    use_size = (sizeModulo * 40, sizeModulo * 12)
+    padMultiplier = 2 # how much we add to the top of the image (as a multiplier)
+    use_size = (sizeModulo * 40, sizeModulo * 10 * padMultiplier)
     rgbMax = rgb_image.max()
 
     rgb_image = cv2.resize(rgb_image, use_size)
@@ -64,8 +65,7 @@ if __name__ == '__main__':
 
     depth_image = cv2.resize(depth_image, use_size)
 
-    # depth_image is also inverted. Try to invert, but zeros?
-    # maxDepth = 2300 # seems arbitrary?
+    # depth_image is also inverted. 
     maxDepth = depth_image.max()
     depth_image = (maxDepth - depth_image) * round(pow(2,16) / maxDepth) #scale to u16 range
 
