@@ -1,15 +1,15 @@
 ----------------- Options ---------------
                batch_size: 2                             
           checkpoints_dir: ./checkpoints                 
-                 dataroot: 'datasets'                    	[default: None]
+                 dataroot: 'datasets\track\'             	[default: None]
                   dataset: kitti                         
-                    epoch: kitti                         	[default: latest]
+                    epoch: latest                        
                   gpu_ids: 0                             
                 init_gain: 0.02                          
                 init_type: kaiming                       
                   isTrain: False                         	[default: None]
                     model: roadseg                       
-                     name: kitti                         	[default: experiment_name]
+                     name: track--use_sne                	[default: experiment_name]
                  no_label: False                         
                      norm: instance                      
               num_threads: 8                             
@@ -20,6 +20,6 @@
            serial_batches: False                         
                 useHeight: 384                           
                  useWidth: 1248                          
-                  use_sne: True                          	[default: False]
+                  use_sne: False                         
                   verbose: False                         
 ----------------- End -------------------

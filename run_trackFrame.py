@@ -1,9 +1,11 @@
 import os
-
+import sys
+sys.path.insert(0, 'b:\code\SNE-RoadSeg')
 from options.test_options import TestOptions
 from models import create_model
 from util.util import tensor2labelim, tensor2confidencemap
 from models.sne_model import SNE
+
 import torchvision.transforms as transforms
 import torch
 import numpy as np
@@ -30,13 +32,13 @@ if __name__ == '__main__':
     # in the bottom half of the frame. SO, we can try expanding the rgb and depth images to include
     # a "black" top half. TBD.
 
-    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_500.jpg')), cv2.COLOR_BGR2RGB)
+    rgb_image = cv2.cvtColor(cv2.imread(os.path.join('datasets', 'track','testing','image_2','frame_100.jpg')), cv2.COLOR_BGR2RGB)
     cv2.imwrite(os.path.join('output', 'oimage.png'), rgb_image)
 
     # pad the image by its height    
     topPad, width, channels = rgb_image.shape
     rgb_image = cv2.copyMakeBorder(rgb_image, topPad, 0, 0, 0, cv2.BORDER_CONSTANT, None, value = 0)
-    fName = 'frame_700.pfm'
+    fName = 'frame_100.pfm'
 
     # cv2 brings images in with shape rows, columns 
     depth_image = cv2.imread(os.path.join('b:\\','code','Midas','output',fName), cv2.IMREAD_UNCHANGED)
